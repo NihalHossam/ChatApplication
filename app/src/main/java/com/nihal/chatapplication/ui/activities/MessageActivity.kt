@@ -30,6 +30,7 @@ class MessageActivity : AppCompatActivity() {
         setToolbar()
         setSendMessageListener()
         displayAllMessages()
+        setMessagesSeen()
     }
 
     private fun setToolbar() {
@@ -44,7 +45,9 @@ class MessageActivity : AppCompatActivity() {
 
     private fun initRecyclerView() {
         adapter = MessagesAdapter()
-        binding.chatMessagesRecyclerView.layoutManager = LinearLayoutManager(this)
+        val linearLayoutManager = LinearLayoutManager(applicationContext)
+        linearLayoutManager.stackFromEnd = true
+        binding.chatMessagesRecyclerView.layoutManager = linearLayoutManager
         binding.chatMessagesRecyclerView.adapter = adapter
     }
 
@@ -71,4 +74,14 @@ class MessageActivity : AppCompatActivity() {
             adapter.notifyDataSetChanged()
         })
     }
+
+    private fun setMessagesSeen() {
+        userViewModel.setMessagesSeen()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        userViewModel.removeSeenListener()
+    }
+
 }

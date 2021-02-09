@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.nihal.chatapplication.databinding.UserItemBinding
 import com.nihal.chatapplication.model.User
 
-class UsersAdapter (): RecyclerView.Adapter<UsersAdapter.ViewHolder>(){
+class UsersAdapter(): RecyclerView.Adapter<UsersAdapter.ViewHolder>(){
 
     private var onItemClickListener: ((User) -> Unit)? = null
 
@@ -35,13 +35,6 @@ class UsersAdapter (): RecyclerView.Adapter<UsersAdapter.ViewHolder>(){
      * @param list The list to be submitted.
      */
     fun submitList(list: List<User>?) = differ.submitList(list)
-
-    /**
-     * Returns a house object at a specific position.
-     * @param position The position of the item within the adapter's data set.
-     * @return A house at the specified position.
-     */
-    fun getHouseAtPosition(position: Int): User = differ.currentList[position]
 
     /**
      * Gets the total number of items in this adapter.

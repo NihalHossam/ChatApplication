@@ -61,7 +61,7 @@ class SignupActivity : AppCompatActivity() {
             hideKeyboard()
         }
 
-        binding.passwordEditText.setOnEditorActionListener { v, actionId, event ->
+        binding.passwordEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 hideKeyboard()
                 binding.signupButton.isFocusable = true
