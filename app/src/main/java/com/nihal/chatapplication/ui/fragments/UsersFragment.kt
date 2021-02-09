@@ -1,6 +1,7 @@
 package com.nihal.chatapplication.ui.fragments
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nihal.chatapplication.adapters.UsersAdapter
 import com.nihal.chatapplication.databinding.FragmentUsersBinding
+import com.nihal.chatapplication.ui.activities.MessageActivity
 import com.nihal.chatapplication.viewmodel.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
@@ -39,12 +41,24 @@ class UsersFragment : Fragment() {
         adapter = UsersAdapter()
         binding.usersRecyclerView.layoutManager = LinearLayoutManager(context)
         binding.usersRecyclerView.adapter = adapter
+        setUserClickListener()
     }
 
     private fun displayUsers() {
         userViewModel.getAllUsers().observe(viewLifecycleOwner, { usersList ->
             adapter.submitList(usersList)
         })
+    }
+
+    /**
+     * Sends a bundle to the Details fragment with the house that was clicked from the list.
+     */
+    private fun setUserClickListener() {
+        adapter.setOnItemClickListener { user ->
+            val intent = Intent(context, MessageActivity::class.java)
+            intent.putExtra("user", user)
+            startActivity(intent)
+        }
     }
 
     private fun setSearchListeners(){
@@ -64,6 +78,7 @@ class UsersFragment : Fragment() {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 searchUsers(s.toString().toLowerCase(Locale.ROOT))
             }
+
             override fun afterTextChanged(s: Editable) {}
         })
     }
