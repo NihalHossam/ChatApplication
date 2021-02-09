@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1070733840230",
+    "firebase_url": "https://chat-6e3bd.firebaseio.com",
+    "project_id": "chat-6e3bd",
+    "storage_bucket": "chat-6e3bd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1070733840230:android:3b36f9fdc79cffd043c2a7",
+        "android_client_info": {
+          "package_name": "com.nihal.chatapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1070733840230-16tsreg1f0nnjtfce9m9qufv3s5rkqho.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDILh6RD9Zp8Q3RJsDVvcIbALFafM_SQ4g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1070733840230-16tsreg1f0nnjtfce9m9qufv3s5rkqho.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
