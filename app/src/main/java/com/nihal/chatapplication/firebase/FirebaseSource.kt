@@ -15,7 +15,9 @@ class FirebaseSource @Inject constructor(private val firebaseAuth: FirebaseAuth,
 
     fun getUserReference(userID: String) = firebaseDatabase.getReference("Users").child(userID)
 
-    fun getAllUsers() = firebaseDatabase.getReference("Users").orderByChild("searchName")
+    fun getAllUsers() = firebaseDatabase.getReference("Users")
+
+    fun getSortedUsers() = firebaseDatabase.getReference("Users").orderByChild("searchName")
 
     fun getChat() = FirebaseDatabase.getInstance().getReference("Chats")
 

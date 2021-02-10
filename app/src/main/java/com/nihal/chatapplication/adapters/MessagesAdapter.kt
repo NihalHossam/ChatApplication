@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.nihal.chatapplication.R
 import com.nihal.chatapplication.model.Chat
-import javax.inject.Inject
 
 
 class MessagesAdapter(): RecyclerView.Adapter<MessagesAdapter.MessagesViewHolder>() {

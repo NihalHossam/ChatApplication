@@ -14,6 +14,8 @@ class Repository @Inject constructor(private val fireBaseSource: FirebaseSource)
 
     fun getAllUsers() = fireBaseSource.getAllUsers()
 
+    fun getSortedUsers() = fireBaseSource.getSortedUsers()
+
     fun getChat() = fireBaseSource.getChat()
 
     fun getChatList() = fireBaseSource.getChatList()

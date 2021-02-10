@@ -2,13 +2,16 @@ package com.nihal.chatapplication.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.nihal.chatapplication.databinding.UserItemBinding
+import com.nihal.chatapplication.databinding.ChatItemBinding
 import com.nihal.chatapplication.model.User
+import com.nihal.chatapplication.viewmodel.UserViewModel
 
-class ChatsAdapter (): RecyclerView.Adapter<ChatsAdapter.ViewHolder>(){
+class ChatsAdapter(private val userViewModel: UserViewModel, private val lifecycleOwner: LifecycleOwner) : RecyclerView.Adapter<ChatsAdapter.ViewHolder>(){
 
     private var onItemClickListener: ((User) -> Unit)? = null
 
@@ -26,7 +29,7 @@ class ChatsAdapter (): RecyclerView.Adapter<ChatsAdapter.ViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = UserItemBinding.inflate(inflater, parent, false)
+        val binding = ChatItemBinding.inflate(inflater, parent, false)
         return ViewHolder(binding)
     }
 
@@ -37,10 +40,11 @@ class ChatsAdapter (): RecyclerView.Adapter<ChatsAdapter.ViewHolder>(){
      */
     override fun onBindViewHolder(holder: ChatsAdapter.ViewHolder, position: Int) {
         val currentUser = differ.currentList[position]
-
+        holder.bind(currentUser)
         holder.itemView.setOnClickListener{
             onItemClickListener?.let{it(currentUser)}
         }
+
     }
 
     /**
@@ -49,12 +53,6 @@ class ChatsAdapter (): RecyclerView.Adapter<ChatsAdapter.ViewHolder>(){
      */
     fun submitList(list: List<User>?) = differ.submitList(list)
 
-    /**
-     * Returns a house object at a specific position.
-     * @param position The position of the item within the adapter's data set.
-     * @return A house at the specified position.
-     */
-    fun getHouseAtPosition(position: Int): User = differ.currentList[position]
 
     /**
      * Gets the total number of items in this adapter.
@@ -67,8 +65,15 @@ class ChatsAdapter (): RecyclerView.Adapter<ChatsAdapter.ViewHolder>(){
     /**
      * Holds specifications for the views in the RecyclerView item row.
      */
-    inner class ViewHolder(val binding: UserItemBinding) :
+    inner class ViewHolder(val binding: ChatItemBinding) :
         RecyclerView.ViewHolder(binding.root){
+        fun bind(user: User) {
+            binding.user = user
+            binding.executePendingBindings()
+            userViewModel.getLastMessage(user.id).observe(lifecycleOwner, { lastMessage ->
+                binding.lastMessageTextView.text = lastMessage
+            })
+        }
     }
 
     /*
@@ -77,5 +82,8 @@ class ChatsAdapter (): RecyclerView.Adapter<ChatsAdapter.ViewHolder>(){
     fun setOnItemClickListener(listener: (User) -> Unit){
         onItemClickListener = listener
     }
+
+
+
 
 }

@@ -1,5 +1,6 @@
 package com.nihal.chatapplication.viewmodel
 
+import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -7,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.nihal.chatapplication.model.Chat
+import com.nihal.chatapplication.model.ChatList
 import com.nihal.chatapplication.model.User
 import com.nihal.chatapplication.repository.Repository
 import com.nihal.chatapplication.utils.Resource
@@ -21,7 +23,9 @@ class UserViewModel @ViewModelInject constructor(
 
     private val userLiveData = MutableLiveData<Resource<User>>()
     private val usersList = MutableLiveData<List<User>>()
+    private val usersChats = MutableLiveData<List<User>>()
     private val chat = MutableLiveData<List<Chat>>()
+    private val lastMessage = MutableLiveData<String>()
     lateinit var receiver: User
     lateinit var seenListener: ValueEventListener
 
@@ -44,7 +48,7 @@ class UserViewModel @ViewModelInject constructor(
     }
 
     fun getAllUsers(): MutableLiveData<List<User>> {
-        repository.getAllUsers().addValueEventListener(object : ValueEventListener {
+        repository.getSortedUsers().addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val listOfUsers = ArrayList<User>()
                 for (userSnapshot in snapshot.children) {
@@ -62,7 +66,7 @@ class UserViewModel @ViewModelInject constructor(
     }
 
     fun searchUsers(searchString: String): MutableLiveData<List<User>> {
-        repository.getAllUsers()
+        repository.getSortedUsers()
             .startAt(searchString)
             .endAt(searchString + "\uf0ff")
             .addValueEventListener(object : ValueEventListener {
@@ -132,19 +136,81 @@ class UserViewModel @ViewModelInject constructor(
                 for (dataSnapshot in snapshot.children) {
                     val chat = dataSnapshot.getValue(Chat::class.java)
                     if (chat!!.receiver.equals(getUserID()) && chat.sender
-                            .equals(receiver.id)) {
+                            .equals(receiver.id)
+                    ) {
                         val hashMap = HashMap<String, Any>()
                         hashMap["isSeen"] = true
                         dataSnapshot.ref.updateChildren(hashMap)
                     }
                 }
             }
+
             override fun onCancelled(error: DatabaseError) {}
         })
     }
 
     fun removeSeenListener() {
         repository.getChat().removeEventListener(seenListener)
+    }
+
+    fun getLastMessage(receiverID: String): MutableLiveData<String> {
+        var theLastMessage = "default"
+        repository.getChat().addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for (snapshot in dataSnapshot.children) {
+                    val chat: Chat? = snapshot.getValue(Chat::class.java)
+                    if (chat != null) {
+                        if (chat.receiver.equals(getUserID())
+                            && chat.sender.equals(receiverID) ||
+                            chat.receiver.equals(receiverID) && chat.sender
+                                .equals(getUserID())
+                        ) {
+                            theLastMessage = chat.message
+                        }
+                    }
+                }
+                if (theLastMessage.equals("default")) theLastMessage = "No Message"
+                lastMessage.value = theLastMessage
+            }
+            override fun onCancelled(databaseError: DatabaseError) {}
+        })
+
+        return lastMessage
+    }
+
+    fun getUserChatList(): MutableLiveData<List<User>> {
+
+        repository.getChatList().child(getUserID()).addValueEventListener(object :
+            ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val listOfChat = ArrayList<ChatList>()
+                for (dataSnapshot in snapshot.children) {
+                    val chatList: ChatList? = dataSnapshot.getValue(ChatList::class.java)
+                    listOfChat.add(chatList!!)
+                }
+                repository.getAllUsers().addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val listOfUsers = ArrayList<User>()
+                        for (dataSnapshot in snapshot.getChildren()) {
+                            val user = dataSnapshot.getValue(User::class.java)
+                            for (chatlist in listOfChat) {
+                                if (user != null) {
+                                    if (user.id.equals(chatlist.id)) {
+                                        listOfUsers.add(user)
+                                    }
+                                }
+                            }
+                        }
+                        usersChats.value = listOfUsers
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {}
+                })
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
+        })
+        return usersChats
     }
 
 }

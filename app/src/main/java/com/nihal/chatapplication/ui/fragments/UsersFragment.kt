@@ -50,9 +50,6 @@ class UsersFragment : Fragment() {
         })
     }
 
-    /**
-     * Sends a bundle to the Details fragment with the house that was clicked from the list.
-     */
     private fun setUserClickListener() {
         adapter.setOnItemClickListener { user ->
             val intent = Intent(context, MessageActivity::class.java)
